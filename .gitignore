@@ -1,6 +1,6 @@
-odp
 *.pyc
 nohup.out
 *.pk
 *.txt
 *.db
+*.csv
