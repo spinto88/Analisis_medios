@@ -89,7 +89,6 @@ Interpretation and temporal profile
 j = 0
 init_date = datetime.datetime.strptime(init_date, "%Y-%m-%d").date()
 final_date = datetime.datetime.strptime(final_date, "%Y-%m-%d").date()
-date = deepcopy(init_date)
 for comp in components:
 
     """ Intepretation """
@@ -102,26 +101,27 @@ for comp in components:
     fp.close()
 
     """ Temporal profile """
+    date = deepcopy(init_date)
     with open(foldername + '{}_topic{}_temp.csv'.format(newspaper, j), 'a') as csvfile:
-        writer = csv.writer(csvfile, delimiter= ',')
+        csvfile.write('date,topic_weight\n')
         while date <= final_date:
             topic_weight = 0.00
             for i in range(nmf_array.shape[0]):
                 if ids_relation[i]['date'] == date:
                     topic_weight += len(content[i]) * nmf_array[i][j]
-            writer.writerow([date, topic_weight])
+            csvfile.write('{},{}\n'.format(date, topic_weight))
             date += datetime.timedelta(1)
+        csvfile.close()
 
     """ Vector representation """
     pk.dump(comp, file(foldername + '{}_topic{}_vect.pk'.format(newspaper, j),'w'))
 
     """ Notes asociated """
     with open(foldername + '{}_topic{}_notes.csv'.format(newspaper, j), 'a') as csvfile:
-        fieldnames = ['database_ids']
-        writer = csv.DictWriter(csvfile, fieldnames = fieldnames)
-        writer.writeheader()
+        csvfile.write('Database_ids_notes\n')
         for i in range(nmf_array.shape[0]):
             if notes_topics[i] == j:
-                writer.writerow({'database_ids': ids_relation[i]['db_id']})
+                csvfile.write('{},'.format(ids_relation[i]['db_id']))
+        csvfile.close()
     
     j += 1
