@@ -14,13 +14,14 @@ content += [row[0] + row[1] for row in c]
 
 conn.close()
 
+print len(content)
+
 """
 Entrenamiento de la valorizacion tfidf
-"""
 
-tfidf = Tfidf(min_df = 0.005, max_df = 0.10, ngram_range = (1,2))
+tfidf = Tfidf(min_df = 0.01, max_df = 0.70, ngram_range = (1,2))
 tfidf.fit(content)
 
 pk.dump(tfidf, open('Tfidf_transformer.pk','w'))
-
+"""
 

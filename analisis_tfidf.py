@@ -14,7 +14,7 @@ from sklearn.preprocessing import Normalizer
 """
 Where to save the results
 """
-foldername = 'Data/'
+foldername = 'Data03-05/'
 try:
     os.mkdir(foldername)
 except:
@@ -23,10 +23,10 @@ except:
 """
 Database query
 """
-newspaper = 'lanacion'
-init_date = '2017-04-01'
-final_date = '2017-04-10'
-section = 'Política'
+newspaper = 'pagina12'
+init_date = '2017-03-01'
+final_date = '2017-06-01'
+section = 'El país'
 
 conn = sqlite3.connect('data.db')
 c = conn.cursor()
@@ -94,7 +94,8 @@ for comp in components:
     """ Intepretation """
     ordered_features = sorted(features, reverse = True, key = lambda x: comp[x[1]])
     features_name = [of[0] for of in ordered_features]
-    fp = codecs.open(foldername + '{}_topic{}.txt'.format(newspaper, j), 'a', 'utf8')
+    fp = codecs.open(foldername + '{}_topics.txt'.format(newspaper), 'a', 'utf8')
+    fp.write(u'Topic {}:\n'.format(j))
     for fn in range(50):
         fp.write(u'{}, '.format(features_name[fn]))
     fp.write('\n')
