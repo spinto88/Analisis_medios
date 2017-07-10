@@ -14,7 +14,7 @@ from sklearn.preprocessing import Normalizer
 """
 Where to save the results
 """
-foldername = 'Data03-05/'
+foldername = 'Data01-03/'
 try:
     os.mkdir(foldername)
 except:
@@ -25,15 +25,18 @@ Database query
 """
 newspaper = 'pagina12'
 init_date = '2017-03-01'
-final_date = '2017-06-01'
-section = 'El país'
+final_date = '2017-03-01'
+section = u'El país'
+tfidf_id = 'P'
+
+tfidf = pk.load(open('Tfidf_section{}_id{}_fd{}.pk'.format(tfidf_id, init_date, final_date),'r'))
 
 conn = sqlite3.connect('data.db')
 c = conn.cursor()
 
 ids_relation = []
 content = []
-c.execute('select id, date, title, body from {} where date >= "{}" and date <= "{}" and section == "{}" and title IS NOT NULL;'.format(newspaper, init_date, final_date, section))
+c.execute(u'select id, date, title, body from {} where date >= "{}" and date <= "{}" and section == "{}" and title IS NOT NULL;'.format(newspaper, init_date, final_date, section))
 for row in c:
     try:
         content.append(row[2] + row[3])
@@ -46,12 +49,11 @@ for row in c:
 conn.close()
 
 """
-Tf-idf loading and transform
+Tf-idf transform
 """
-tfidf = pk.load(open('Tfidf_transformer.pk','r'))
 features = tfidf.vocabulary_.items()
-
 xtfidf = tfidf.transform(content)
+
 
 """
 Topic estimation
@@ -92,7 +94,7 @@ final_date = datetime.datetime.strptime(final_date, "%Y-%m-%d").date()
 for comp in components:
 
     """ Intepretation """
-    ordered_features = sorted(features, reverse = True, key = lambda x: comp[x[1]])
+    ordered_features = sorted(features, reverse = True, key = lambda x: tfidf.idf_[x[1]] * comp[x[1]])
     features_name = [of[0] for of in ordered_features]
     fp = codecs.open(foldername + '{}_topics.txt'.format(newspaper), 'a', 'utf8')
     fp.write(u'Topic {}:\n'.format(j))
