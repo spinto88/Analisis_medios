@@ -14,7 +14,7 @@ from sklearn.preprocessing import Normalizer
 """
 Where to save the results
 """
-foldername = 'Data01-03/'
+foldername = 'Data01-03_01-06/'
 try:
     os.mkdir(foldername)
 except:
@@ -23,10 +23,10 @@ except:
 """
 Database query
 """
-newspaper = 'pagina12'
+newspaper = 'lanacion'
 init_date = '2017-03-01'
-final_date = '2017-03-01'
-section = u'El país'
+final_date = '2017-06-01'
+section = u'Política'
 tfidf_id = 'P'
 
 tfidf = pk.load(open('Tfidf_section{}_id{}_fd{}.pk'.format(tfidf_id, init_date, final_date),'r'))

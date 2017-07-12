@@ -4,7 +4,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer as Tfidf
 import cPickle as pk
 
 init_date = "2017-03-01"
-final_date = "2017-03-01"
+final_date = "2017-06-01"
 lanacion_section = u'Política'
 pagina12_equivalence = {u'Política': u'El país'}
 
