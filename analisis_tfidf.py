@@ -14,7 +14,7 @@ from sklearn.preprocessing import Normalizer
 """
 Where to save the results
 """
-foldername = 'Data01-03_01-06/'
+foldername = 'Data01-03_01-04/'
 try:
     os.mkdir(foldername)
 except:
@@ -25,11 +25,11 @@ Database query
 """
 newspaper = 'lanacion'
 init_date = '2017-03-01'
-final_date = '2017-06-01'
+final_date = '2017-04-01'
 section = u'Política'
 tfidf_id = 'P'
 
-tfidf = pk.load(open('Tfidf_section{}_id{}_fd{}.pk'.format(tfidf_id, init_date, final_date),'r'))
+tfidf = pk.load(open('Tfidf_all.pk','r'))
 
 conn = sqlite3.connect('data.db')
 c = conn.cursor()
@@ -58,10 +58,18 @@ xtfidf = tfidf.transform(content)
 """
 Topic estimation
 """
-shape = xtfidf.shape[0] * xtfidf.shape[1]
-effective_shape = shape - list(xtfidf.getnnz(0)).count(0) * xtfidf.shape[0]
-nnz = xtfidf.count_nonzero()
-topics = int(np.ceil(np.float(effective_shape) / nnz))
+hist = np.bincount(xtfidf.getnnz(0))
+non_zero = [i * hist[i] for i in range(len(hist))]
+non_zero = np.array(non_zero, dtype = np.float)/np.sum(non_zero)
+
+cum_non_zero = [np.sum(non_zero[:i+1]) for i in range(len(non_zero))]
+j = sorted(range(len(cum_non_zero)), key = lambda x: np.abs(cum_non_zero[x] - 0.5))[0]
+topics = int(np.round((xtfidf.shape[0] * cum_non_zero[j])/j))
+
+#shape = xtfidf.shape[0] * xtfidf.shape[1]
+#effective_shape = shape - list(xtfidf.getnnz(0)).count(0) * xtfidf.shape[0]
+#nnz = xtfidf.count_nonzero()
+#topics = int(np.ceil(np.float(effective_shape) / nnz))
 print 'Cantidad de notas: {}'.format(len(content))
 print 'Tópicos estimados: {}'.format(topics)
 
@@ -94,11 +102,13 @@ final_date = datetime.datetime.strptime(final_date, "%Y-%m-%d").date()
 for comp in components:
 
     """ Intepretation """
-    ordered_features = sorted(features, reverse = True, key = lambda x: tfidf.idf_[x[1]] * comp[x[1]])
+    ordered_features = sorted(features, reverse = True, key = lambda x: comp[x[1]])
+    ordered_features = sorted(ordered_features[:10], reverse = True, key = lambda x: tfidf.idf_[x[1]]
+)
     features_name = [of[0] for of in ordered_features]
     fp = codecs.open(foldername + '{}_topics.txt'.format(newspaper), 'a', 'utf8')
     fp.write(u'Topic {}:\n'.format(j))
-    for fn in range(50):
+    for fn in range(10):
         fp.write(u'{}, '.format(features_name[fn]))
     fp.write('\n')
     fp.close()
