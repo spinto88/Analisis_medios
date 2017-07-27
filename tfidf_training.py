@@ -21,7 +21,7 @@ conn.close()
 
 # Entrenamiento de la valorizacion tfidf
 
-tfidf = Tfidf(min_df = 2, max_df = 0.95, ngram_range = (1,2))
+tfidf = Tfidf(min_df = 2, max_df = 0.95, ngram_range = (1,1))
 tfidf.fit(content)
 
 pk.dump(tfidf, open('Tfidf_all.pk','w'))
