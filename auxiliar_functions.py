@@ -95,3 +95,25 @@ def principal_features(features, components, nprincipal = 10):
         pf.append([x[0] for x in pf_per_comp])
 
     return pf
+
+def temporal_profile(xnmf, ids_relation, content):
+
+    from sklearn.preprocessing import Normalizer
+    import datetime
+    import numpy as np
+    
+    norm1 = Normalizer('l1')
+
+    xnmf = norm1.fit_transform(xnmf)
+
+    ntopics = xnmf.shape[1]
+    dates = sorted(list(set([idsr['date'] for idsr in ids_relation])))
+
+    x_temp = np.zeros([ntopics, len(dates)], dtype = np.float)
+
+    for i in range(xnmf.shape[0]):
+        x_topic = np.argmax(xnmf[i])
+        date_id = dates.index(ids_relation[i]['date'])
+        x_temp[x_topic][date_id] += len(content[i]) * xnmf[i][x_topic]
+
+    return x_temp
