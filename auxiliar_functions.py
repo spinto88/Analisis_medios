@@ -96,7 +96,47 @@ def principal_features(features, components, nprincipal = 10):
 
     return pf
 
-def temporal_profile(xnmf, ids_relation, content):
+def save_features(foldername, features, components, nprincipal = 10):
+
+    import codecs
+    import os
+    import csv 
+    import cPickle as pk
+
+    """
+    Where to save the results
+    """
+    try:
+        os.mkdir(foldername)
+    except:
+        pass
+
+    fp = codecs.open(foldername + '/topics.txt', 'a', 'utf8')
+    pf = principal_features(features, components, nprincipal)
+    for j in range(len(pf)):
+        fp.write(u'Topic {}:\n'.format(j))
+        for k in pf[j]:
+            fp.write(u'{}, '.format(k))
+        fp.write('\n')
+    fp.close()
+
+    """ Vector representation """
+    for j in range(len(pf)):
+        pk.dump(components[j], file(foldername + '/topic{}_vect.pk'.format(j),'w'))
+
+def save_temporal_profile(foldername, xnmf, ids_relation, content):
+
+    import codecs
+    import os
+    import csv 
+
+    """
+    Where to save the results
+    """
+    try:
+        os.mkdir(foldername)
+    except:
+        pass
 
     from sklearn.preprocessing import Normalizer
     import datetime
@@ -111,9 +151,27 @@ def temporal_profile(xnmf, ids_relation, content):
 
     x_temp = np.zeros([ntopics, len(dates)], dtype = np.float)
 
-    for i in range(xnmf.shape[0]):
-        x_topic = np.argmax(xnmf[i])
+    for j in range(ntopics):
+      for i in range(xnmf.shape[0]):
+  #      x_topic = np.argmax(xnmf[i])
         date_id = dates.index(ids_relation[i]['date'])
-        x_temp[x_topic][date_id] += len(content[i]) * xnmf[i][x_topic]
+        x_temp[j][date_id] += len(content[i]) * xnmf[i][j]
+#        x_temp[x_topic][date_id] += len(content[i])
 
-    return x_temp
+    for i in range(x_temp.shape[0]):
+        with open(foldername + '/topic{}_temp.csv'.format(i), 'w') as csvfile:
+            csvfile.write('date,topic_weight\n')
+            for j in range(len(dates)):
+                csvfile.write('{},{}\n'.format(dates[j], x_temp[i][j]))
+            csvfile.close()
+
+    notes_topics = [np.argmax(x) for x in xnmf]
+    for i in range(x_temp.shape[0]):
+        with open(foldername + '/topic{}_idnotes.csv'.format(i), 'w')\
+                    as csvfile:
+            csvfile.write('Database_ids_notes\n')
+            for j in range(len(notes_topics)):
+                if notes_topics[j] == i:
+                    csvfile.write('{},'.format(ids_relation[j]['db_id']))
+            csvfile.close()
+
