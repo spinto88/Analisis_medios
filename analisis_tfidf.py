@@ -3,7 +3,7 @@
 import auxiliar_functions as aux_func
 
 newspaper = 'lanacion'
-#section = u'El país'
+#section = u'Deportes'
 section = None
 
 foldername = 'LaNacion_marzo'
@@ -16,6 +16,8 @@ xtfidf, features, ids_relation, content = aux_func.tfidf_matrix(newspaper, \
 
 ntopics, features_filtered = aux_func.topics_estimation(xtfidf, \
                                            features, delta = 0.05)
+
+print ntopics
 
 xnmf, components = aux_func.nmf_decomposition(xtfidf, ntopics)
 

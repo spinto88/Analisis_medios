@@ -2,6 +2,7 @@
 import sqlite3
 from sklearn.feature_extraction.text import TfidfVectorizer as Tfidf
 import cPickle as pk
+from nltk.corpus import stopwords
 
 init_date = "2017-01-01"
 final_date = "2017-06-01"
@@ -21,8 +22,11 @@ conn.close()
 
 # Entrenamiento de la valorizacion tfidf
 
-tfidf = Tfidf(min_df = 2, max_df = 0.95, ngram_range = (1,1))
+tfidf = Tfidf(min_df = 2, max_df = 0.95, \
+              stop_words = stopwords.words('spanish'), \
+              ngram_range = (1,1))
+
 tfidf.fit(content)
 
-pk.dump(tfidf, open('Tfidf_all.pk','w'))
+pk.dump(tfidf, open('idf.pk','w'))
 

@@ -141,6 +141,7 @@ def save_temporal_profile(foldername, xnmf, ids_relation, content):
     from sklearn.preprocessing import Normalizer
     import datetime
     import numpy as np
+    from nltk.tokenize import word_tokenize
     
     norm1 = Normalizer('l1')
 
@@ -151,12 +152,16 @@ def save_temporal_profile(foldername, xnmf, ids_relation, content):
 
     x_temp = np.zeros([ntopics, len(dates)], dtype = np.float)
 
+    content_length = []
+    for i in range(xnmf.shape[0]):
+        content_length.append(len(word_tokenize(content[i])))
+
+    # Calculo el peso de un topico como la cantidad de palabras de una nota
+    # mas la proyeccion de esa nota al topico
     for j in range(ntopics):
       for i in range(xnmf.shape[0]):
-  #      x_topic = np.argmax(xnmf[i])
         date_id = dates.index(ids_relation[i]['date'])
-        x_temp[j][date_id] += len(content[i]) * xnmf[i][j]
-#        x_temp[x_topic][date_id] += len(content[i])
+        x_temp[j][date_id] += content_length[i] * xnmf[i][j]
 
     for i in range(x_temp.shape[0]):
         with open(foldername + '/topic{}_temp.csv'.format(i), 'w') as csvfile:
@@ -172,6 +177,6 @@ def save_temporal_profile(foldername, xnmf, ids_relation, content):
             csvfile.write('Database_ids_notes\n')
             for j in range(len(notes_topics)):
                 if notes_topics[j] == i:
-                    csvfile.write('{},'.format(ids_relation[j]['db_id']))
+                    csvfile.write('{}\n'.format(ids_relation[j]['db_id']))
             csvfile.close()
 
