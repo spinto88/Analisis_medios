@@ -2,10 +2,9 @@
 import sqlite3
 from sklearn.feature_extraction.text import TfidfVectorizer as Tfidf
 import cPickle as pk
-from nltk.corpus import stopwords
 
 init_date = "2017-01-01"
-final_date = "2017-06-01"
+final_date = "2017-08-01"
 #lanacion_section = u'Política'
 #pagina12_equivalence = {u'Política': u'El país'}
 
@@ -20,10 +19,20 @@ content += [row[0] + row[1] for row in c]
 
 conn.close()
 
+"""
+Palabras comunes
+"""
+import codecs
+fp = codecs.open("stopwords.txt", "r", encoding = "utf-8")
+data = fp.read()
+fp.close()
+#words = [data.split('\n')[i].split('\t')[1] for i in range(1, len(data.split('\n')) - 1)]
+words = data.split('\r\n')
+
 # Entrenamiento de la valorizacion tfidf
 
 tfidf = Tfidf(min_df = 2, max_df = 0.95, \
-              stop_words = stopwords.words('spanish'), \
+              stop_words = words, \
               ngram_range = (1,1))
 
 tfidf.fit(content)

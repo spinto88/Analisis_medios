@@ -2,22 +2,37 @@
 
 import auxiliar_functions as aux_func
 
-newspaper = 'lanacion'
-#section = u'Deportes'
-section = None
+newspaper = 'pagina12'
+section = u'El país'
+#section = None
 
-foldername = 'LaNacion_marzo'
+foldername = 'Pagina12_politica_4meses'
 
 init_date = '2017-03-01'
-final_date = '2017-04-01'
+final_date = '2017-06-01'
 
 xtfidf, features, ids_relation, content = aux_func.tfidf_matrix(newspaper, \
                                             init_date, final_date, section) 
 
-ntopics, features_filtered = aux_func.topics_estimation(xtfidf, \
-                                           features, delta = 0.05)
+ntopics, features_filtered, \
+             inferior, superior, density = aux_func.topics_estimation(xtfidf, \
+                                 features, delta = 0.10)
 
-print ntopics
+#print xtfidf.shape
+print ntopics, inferior, superior
+
+import matplotlib.pyplot as plt
+
+plt.axes([0.2, 0.2, 0.70, 0.70])
+plt.hist(range(len(density)), weights = density, bins = 20, log = True, normed = True)
+plt.ylabel('Densidad de columnas', size = 15)
+plt.xticks(size = 15)
+plt.yticks(size = 15)
+plt.xlabel('Cantidad de elementos no nulos', size = 15)
+plt.savefig('histograma_de_elementos_no_nulos.eps')
+plt.show()
+
+exit()
 
 xnmf, components = aux_func.nmf_decomposition(xtfidf, ntopics)
 

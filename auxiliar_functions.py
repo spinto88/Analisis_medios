@@ -73,7 +73,7 @@ def topics_estimation(xtfidf, features, delta = 0.20):
     features_filtered = filter(lambda x: nnz[x[1]] > inferior and \
                            nnz[x[1]] < superior, features)
 
-    return ntopics, features_filtered 
+    return ntopics, features_filtered, inferior, superior, density 
 
 def nmf_decomposition(xtfidf, ntopics, random_seed = 123457):
 
