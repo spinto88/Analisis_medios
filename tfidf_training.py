@@ -26,7 +26,6 @@ import codecs
 fp = codecs.open("stopwords.txt", "r", encoding = "utf-8")
 data = fp.read()
 fp.close()
-#words = [data.split('\n')[i].split('\t')[1] for i in range(1, len(data.split('\n')) - 1)]
 words = data.split('\r\n')
 
 # Entrenamiento de la valorizacion tfidf

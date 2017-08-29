@@ -1,33 +1,60 @@
 from stacked_graph import *
+from auxiliar_functions import *
+from temporal_profiles_plot import *
 import numpy as np
+import cPickle as pk
 
-data = []
-folder = 'Pagina12_politica_marzo'
-n = 5
+folder = 'LaNacion_politica_marzo'
 
-for topic in np.random.choice(range(40), 10): #[2, 11, 36, 8, 28]: #range(40):
+fusion_labels = pk.load(file('{}/Fusion_labels.pk'.format(folder),'r'))
 
-    topic_profile = np.genfromtxt('{}/topic{}_temp.csv'.format(folder,topic),\
-                                  delimiter = ',', skip_header = 1, \
-                                  dtype = None)
+data = {}
+for macro_topic in fusion_labels.keys():
+  
+  for topic in fusion_labels[macro_topic]:   
 
-    topic_weigth = [i[1] for i in topic_profile]
+    try:
+        data[macro_topic] += np.array(topic_means('{}/topic{}_temp.csv'.\
+                        format(folder, topic), slide_window = 0)[1])
+    except:
+        data[macro_topic] = np.array(topic_means('{}/topic{}_temp.csv'.\
+                        format(folder, topic), slide_window = 0)[1])
+    
 
-    topic_weigth_norm = []
-    if n != 0:
-      for i in range(n):
-        topic_weigth_norm.append(np.trapz(topic_weigth[:i+n+1]))
-      for i in range(n, len(topic_weigth) - n):
-        topic_weigth_norm.append(np.trapz(topic_weigth[i-n:i+n+1]))
-      for i in range(len(topic_weigth) - n, len(topic_weigth)):
-        topic_weigth_norm.append(np.trapz(topic_weigth[i-n:]))
-      data.append(topic_weigth_norm)
-    else:
-      data.append(topic_weigth)
+dates = topic_means('{}/topic{}_temp.csv'.format(folder, topic), \
+                      slide_window = 3)[0]
 
-#print sorted(range(40), key = lambda x: np.trapz(data[x]), reverse = True)[:5]
 
-#exit()
-      
-stacked_graph(data, normed = True)
+macro_topics = fusion_labels.keys()
+mean_topics = sorted(macro_topics, reverse = True, \
+            key = lambda x: np.max(data[x]))[:5]
 
+mean_topics += sorted(macro_topics, reverse = True, \
+            key = lambda x: np.trapz(data[x]))[:5]
+
+mean_topics = set(mean_topics)
+
+data_aux = {}
+
+for macro_topic in mean_topics:
+  
+  for topic in fusion_labels[macro_topic]:   
+
+    try:
+        data_aux[macro_topic] += np.array(topic_means('{}/topic{}_temp.csv'.\
+                        format(folder, topic), slide_window = 0)[1])
+    except:
+        data_aux[macro_topic] = np.array(topic_means('{}/topic{}_temp.csv'.\
+                        format(folder, topic), slide_window = 0)[1])
+
+
+data_aux2 = []
+for macro_topic in mean_topics:
+
+    data_aux2.append(topic_means_signal(data_aux[macro_topic], slide_window = 3))
+
+for macro_topic in mean_topics:
+    print fusion_labels[macro_topic]
+
+
+stacked_graph(data_aux2, dates, date_ticks = 3, normed = True, file2save = 'LaNacion_marzo_stacked.eps')
