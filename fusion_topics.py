@@ -5,9 +5,9 @@ import datetime
 import cPickle as pk
 from sklearn.preprocessing import Normalizer
 
-foldername = u'LaNacion_politica_marzo'
+foldername = u'LaNacion_politica_feb_mar_abr'
 
-n_topics = 146
+n_topics = 152
 
 norm2 = Normalizer('l2')
 
@@ -35,10 +35,18 @@ data = []
 for n in range(2, n_topics):
      ac = AC(n, affinity = 'precomputed', linkage = 'average')
      labels = ac.fit_predict(dissim)
-     data.append([n, sil(dissim, labels, metric = 'precomputed')])
+     data.append(sil(dissim, labels, metric = 'precomputed'))
      print n, sil(dissim, labels, metric = 'precomputed')
+"""
+eps = 2 * np.std(np.diff(data))
 
-n = sorted(data, reverse = True, key = lambda x: x[1])[0][0]
+for n in range(2, n_topics):
+    if data[n-2] > np.max(data) - eps:
+        break
+
+print n
+print np.argmax(np.array(data)) - 2
+
 ac = AC(n, affinity = 'precomputed', linkage = 'average')
 labels = ac.fit_predict(dissim)
 
@@ -49,3 +57,4 @@ for top in n_topics:
                                  if labels[i] == top]
 
 pk.dump(topics_in_topics, file('{}/Fusion_labels.pk'.format(foldername),'w'))
+"""

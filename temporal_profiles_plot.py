@@ -82,13 +82,20 @@ def temporal_profile(dates, topic_means, date_ticks = 3, \
 
     return None
 
-"""
-data = 'LaNacion_politica_3meses/topic1_temp.csv'
+
+data = 'LaNacion_politica_feb_mar_abr/topic57_temp.csv'
 dates, tm = topic_means(data, slide_window = 3)
+
+#data = 'Pagina12_politica_feb_mar_abr/topic62_temp.csv'
+#dates, tm2 = topic_means(data, slide_window = 0)
+
+#tm = np.array(tm1) + np.array(tm2)
+
+#tm = topic_means_signal(tm, slide_window = 3)
 
 temporal_profile(dates, tm, date_ticks = 15, \
                         colour = 'b', label = '', show = 'on', \
                         filename = None)
 plt.show()
-"""
+
 

@@ -3,13 +3,13 @@
 import auxiliar_functions as aux_func
 
 newspaper = 'lanacion'
-section = u'Política'
-#section = None
+#section = u'El país'
+section = None
 
-foldername = 'LaNacion_politica_marzo'
+foldername = 'LaNacion_feb_mar_abr'
 
-init_date = '2017-03-01'
-final_date = '2017-04-01'
+init_date = '2017-02-01'
+final_date = '2017-05-01'
 
 xtfidf, features, ids_relation, content = aux_func.tfidf_matrix(newspaper, \
                                             init_date, final_date, section) 

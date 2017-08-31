@@ -7,7 +7,6 @@ def stacked_graph(data, dates = [], date_ticks = 3, normed = False, \
                   file2save = None):
 
     np.random.seed(123458)
-
     # Make a stack of all the data
     y = np.row_stack((data)) # shape documents per days
 
@@ -28,15 +27,15 @@ def stacked_graph(data, dates = [], date_ticks = 3, normed = False, \
     ax1 = plt.axes([0.15, 0.2, 0.70, 0.70])
 
     for i in range(y_stack.shape[0] - 1):
-
+        
+      facecolor = (np.random.random(), np.random.random(), np.random.random())
+    
       if i == 0:
-        facecolor = (np.random.random(), np.random.random(), np.random.random())
         ax1.fill_between(x, 0, y_stack[0,:], facecolor = facecolor, \
-                         linewidth = 0.10, alpha=.7)
+                         linewidth = 0.10)
       else:
-        facecolor = (np.random.random(), np.random.random(), np.random.random())
         ax1.fill_between(x, y_stack[i,:], y_stack[i+1,:], \
-                         facecolor = facecolor, linewidth = 0.10, alpha=.7)
+                         facecolor = facecolor, linewidth = 0.10)
 
     plt.xlim([0, len(x)-1])
     plt.ylim([0, np.max(y_stack)])
@@ -48,7 +47,7 @@ def stacked_graph(data, dates = [], date_ticks = 3, normed = False, \
     except:
         pass
 
-    plt.grid('on', alpha = 0.5)
+#    plt.grid('on', alpha = 0.5)
     if file2save != None:
         plt.savefig(file2save)
     plt.show()

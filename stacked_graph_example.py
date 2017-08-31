@@ -4,7 +4,7 @@ from temporal_profiles_plot import *
 import numpy as np
 import cPickle as pk
 
-folder = 'LaNacion_politica_marzo'
+folder = 'LaNacion_politica_feb_mar_abr'
 
 fusion_labels = pk.load(file('{}/Fusion_labels.pk'.format(folder),'r'))
 
@@ -26,11 +26,14 @@ dates = topic_means('{}/topic{}_temp.csv'.format(folder, topic), \
 
 
 macro_topics = fusion_labels.keys()
+
 mean_topics = sorted(macro_topics, reverse = True, \
-            key = lambda x: np.max(data[x]))[:5]
+            key = lambda x: np.max(data[x]))[:3]
+
+#exit()
 
 mean_topics += sorted(macro_topics, reverse = True, \
-            key = lambda x: np.trapz(data[x]))[:5]
+            key = lambda x: np.trapz(data[x]))[:3]
 
 mean_topics = set(mean_topics)
 
@@ -57,4 +60,4 @@ for macro_topic in mean_topics:
     print fusion_labels[macro_topic]
 
 
-stacked_graph(data_aux2, dates, date_ticks = 3, normed = True, file2save = 'LaNacion_marzo_stacked.eps')
+stacked_graph(data_aux2, dates, date_ticks = 7, normed = False, file2save = 'LaNacion_feb_mar_abr_stacked.eps')
