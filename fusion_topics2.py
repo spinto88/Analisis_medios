@@ -5,20 +5,23 @@ import datetime
 import cPickle as pk
 from sklearn.preprocessing import Normalizer
 
-foldername = u'LaNacion_politica_feb_mar_abr'
+foldername = u'LaNacion_deportes_sem'
 
-n_topics = 152
+n_topics = 5
+sems = 30
 
 norm2 = Normalizer('l2')
 
-for topic in range(n_topics):
+for sem in range(1, sems + 1):
 
-    vector = pk.load(file('{}/topic{}_vect.pk'.format(foldername, topic),\
-                                                                  'r'))
+  for topic in range((sem-1) * n_topics, sem * n_topics):
+
+    vector = pk.load(file('{}{}/topic{}_vect.pk'.\
+                               format(foldername, sem, topic),'r'))
     try:
         B[topic] = vector
     except:
-        B = np.zeros([n_topics, len(vector)]) 
+        B = np.zeros([sems * n_topics, len(vector)]) 
         B[topic] = vector
 
 n_topics = B.shape[0]
@@ -33,7 +36,7 @@ from sklearn.metrics import silhouette_score as sil
 data = []
 
 for n in range(2, n_topics):
-     ac = AC(n, affinity = 'precomputed', linkage = 'average')
+     ac = AC(n, affinity = 'precomputed', linkage = 'complete')
      labels = ac.fit_predict(dissim)
      data.append(sil(dissim, labels, metric = 'precomputed'))
      print n, sil(dissim, labels, metric = 'precomputed')
@@ -46,8 +49,8 @@ for n in range(2, n_topics):
 
 print n
 print np.argmax(np.array(data)) + 2
-"""
-ac = AC(n, affinity = 'precomputed', linkage = 'average')
+
+ac = AC(n, affinity = 'precomputed', linkage = 'complete')
 labels = ac.fit_predict(dissim)
 
 topics_in_topics = {}
@@ -56,5 +59,4 @@ for top in n_topics:
     topics_in_topics[top] = [i for i in range(len(labels)) \
                                  if labels[i] == top]
 
-pk.dump(topics_in_topics, file('{}/Fusion_labels.pk'.format(foldername),'w'))
-"""
+pk.dump(topics_in_topics, file('Fusion_labels_sem_lanacion_deportes.pk','w'))

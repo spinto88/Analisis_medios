@@ -82,7 +82,7 @@ def temporal_profile(dates, topic_means, date_ticks = 3, \
 
     return None
 
-
+"""
 data = 'LaNacion_politica_feb_mar_abr/topic57_temp.csv'
 dates, tm = topic_means(data, slide_window = 3)
 
@@ -98,4 +98,4 @@ temporal_profile(dates, tm, date_ticks = 15, \
                         filename = None)
 plt.show()
 
-
+"""

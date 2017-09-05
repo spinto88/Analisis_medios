@@ -9,7 +9,7 @@ def tfidf_matrix(newspaper, init_date, final_date, section):
 
     tfidf = pk.load(open('idf.pk', 'r'))
 
-    order = u'select id, date, title, body from {}'.format(newspaper)
+    order = u'select distinct id, date, title, body from {}'.format(newspaper)
     if section != None:
         order += u' where section == "{}"'.format(section)
         order +=  u' and date >= "{}" and date < "{}" and title IS NOT NULL;'.format(init_date, final_date)
@@ -96,7 +96,7 @@ def principal_features(features, components, nprincipal = 10):
 
     return pf
 
-def save_features(foldername, features, components, nprincipal = 10):
+def save_features(foldername, features, components, nprincipal = 10, offset = 0):
 
     import codecs
     import os
@@ -110,21 +110,21 @@ def save_features(foldername, features, components, nprincipal = 10):
         os.mkdir(foldername)
     except:
         pass
-
-    fp = codecs.open(foldername + '/topics.txt', 'a', 'utf8')
+        
     pf = principal_features(features, components, nprincipal)
+
     for j in range(len(pf)):
-        fp.write(u'Topic {}:\n'.format(j))
+        fp = codecs.open(foldername + '/features{}.txt'.format(j + offset), 'a', 'utf8')
         for k in pf[j]:
             fp.write(u'{}, '.format(k))
         fp.write('\n')
-    fp.close()
+        fp.close()
 
     """ Vector representation """
     for j in range(len(pf)):
-        pk.dump(components[j], file(foldername + '/topic{}_vect.pk'.format(j),'w'))
+        pk.dump(components[j], file(foldername + '/topic{}_vect.pk'.format(j + offset),'w'))
 
-def save_temporal_profile(foldername, xnmf, ids_relation, content):
+def save_temporal_profile(foldername, xnmf, ids_relation, content, offset = 0):
 
     import codecs
     import os
@@ -164,7 +164,7 @@ def save_temporal_profile(foldername, xnmf, ids_relation, content):
         x_temp[j][date_id] += content_length[i] * xnmf[i][j]
 
     for i in range(x_temp.shape[0]):
-        with open(foldername + '/topic{}_temp.csv'.format(i), 'w') as csvfile:
+        with open(foldername + '/topic{}_temp.csv'.format(i + offset), 'w') as csvfile:
             csvfile.write('date,topic_weight\n')
             for j in range(len(dates)):
                 csvfile.write('{},{}\n'.format(dates[j], x_temp[i][j]))
@@ -172,7 +172,7 @@ def save_temporal_profile(foldername, xnmf, ids_relation, content):
 
     notes_topics = [np.argmax(x) for x in xnmf]
     for i in range(x_temp.shape[0]):
-        with open(foldername + '/topic{}_idnotes.csv'.format(i), 'w')\
+        with open(foldername + '/topic{}_idnotes.csv'.format(i + offset), 'w')\
                     as csvfile:
             csvfile.write('Database_ids_notes\n')
             for j in range(len(notes_topics)):
