@@ -4,7 +4,7 @@ import auxiliar_functions as aux_func
 import datetime
 
 newspaper = 'lanacion'
-section = u'Deportes'
+section = u'Política'
 #section = None
 
 date = datetime.date(2017,1,2)
@@ -15,7 +15,7 @@ while date < datetime.date(2017,8,01):
 
     date2 = date + datetime.timedelta(7)
 
-    foldername = 'LaNacion_deportes_sem{}'.format(sem)
+    foldername = 'LaNacion_sem{}'.format(sem)
 
     xtfidf, features, ids_relation, content = aux_func.tfidf_matrix(newspaper, \
                                             date, date2, section) 

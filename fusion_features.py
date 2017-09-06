@@ -4,7 +4,7 @@ import numpy as np
 from temporal_profiles_plot import *
 import datetime
 
-fusion_labels = pk.load(file('Fusion_labels_sem_lanacion_deportes.pk','r'))
+fusion_labels = pk.load(file('Fusion_labels_sem.pk','r'))
 
 topics_per_week = 5
 
@@ -24,13 +24,13 @@ for macro_topic in fusion_labels.keys():
 
     sem = (topic / topics_per_week) + 1
 
-    fp = codecs.open('LaNacion_deportes_sem{}/features{}.txt'.format(sem, topic),\
+    fp = codecs.open('LaNacion_sem{}/features{}.txt'.format(sem, topic),\
                                                            'r','utf-8')
     features_macro_topic += fp.read().split(',')[:10]
 
     fp.close()
 
-    macro_topic_weight[dates[sem - 1]] += int(np.trapz(np.array(topic_means('LaNacion_deportes_sem{}/topic{}_temp.csv'.\
+    macro_topic_weight[dates[sem - 1]] += int(np.trapz(np.array(topic_means('LaNacion_sem{}/topic{}_temp.csv'.\
                          format(sem, topic), slide_window = 0)[1])))
 
 
@@ -43,7 +43,7 @@ for macro_topic in fusion_labels.keys():
   macro_topics[macro_topic] = macro_topic_weight
 
 
-fp = codecs.open('Data_macro_topics_lanacion_deportes.csv','a','utf8')
+fp = codecs.open('Data_macro_topics_lanacion.csv','a','utf8')
 fp.write('Topic,Date,Weight,Tags\n')
 for macro_topic in fusion_labels.keys():
   for sem in range(1,31):

@@ -5,7 +5,7 @@ import datetime
 import cPickle as pk
 from sklearn.preprocessing import Normalizer
 
-foldername = u'LaNacion_deportes_sem'
+foldername = u'LaNacion_sem'
 
 n_topics = 5
 sems = 30
@@ -28,7 +28,7 @@ n_topics = B.shape[0]
 
 B = norm2.fit_transform(B)
 
-dissim = np.ones(n_topics, dtype = np.float) - B.dot(B.T)
+dissim = 2 * np.nan_to_num(np.arccos(B.dot(B.T))) / np.pi
 
 from sklearn.cluster import AgglomerativeClustering as AC
 from sklearn.metrics import silhouette_score as sil
@@ -36,11 +36,11 @@ from sklearn.metrics import silhouette_score as sil
 data = []
 
 for n in range(2, n_topics):
-     ac = AC(n, affinity = 'precomputed', linkage = 'complete')
+     ac = AC(n, affinity = 'precomputed', linkage = 'average')
      labels = ac.fit_predict(dissim)
      data.append(sil(dissim, labels, metric = 'precomputed'))
      print n, sil(dissim, labels, metric = 'precomputed')
-
+"""
 eps = 2 * np.std(np.diff(data))
 
 for n in range(2, n_topics):
@@ -59,4 +59,6 @@ for top in n_topics:
     topics_in_topics[top] = [i for i in range(len(labels)) \
                                  if labels[i] == top]
 
-pk.dump(topics_in_topics, file('Fusion_labels_sem_lanacion_deportes.pk','w'))
+pk.dump(topics_in_topics, file('Fusion_labels_sem.pk','w'))
+"""
+
